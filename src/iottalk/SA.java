@@ -18,7 +18,6 @@ public class SA{
     public String api_url = "http://localhost:9992/csm";
     
     // The Device Model in IoTtalk, please check IoTtalk document.
-    //public String device_model = "Dummy_Device";
     public String device_model = "Dummy_Device";
     
     // [OPTIONAL] If not given or None, server will auto-generate.
@@ -29,7 +28,7 @@ public class SA{
     Or you can use following code to set your own device_addr.
     This String MUST be a hex-string
     */
-    // public String device_addr = "1234567890abedef";
+    // public String device_addr = "1234567890abedef"; //for example
     
     /*
     [OPTIONAL] If the device_addr is set as a fixed value, user can enable
@@ -59,7 +58,6 @@ public class SA{
     public DeviceFeature Dummy_Control = new DeviceFeature("Dummy_Control", "odf"){
         @Override
         public void onData(MqttMessage message, String df_name, String df_type){
-            //System.out.println("Mqtt Callback");
             System.out.println(df_name);
             try{
                 JSONArray so = new JSONArray(new String(message.getPayload(), "UTF-8"));
@@ -78,7 +76,7 @@ public class SA{
     public double push_interval = 1;
     
     public Map<String, String> interval = new HashMap<String, String>() {{
-        put("Orientation", "1");  //assign feature interval
+        put("Dummy_Sensor", "1");  //assign feature interval
     }};
     
     /*
@@ -100,6 +98,5 @@ public class SA{
     public void on_disconnect(){
         System.out.println("disconnect successfully");
     }
-    */
-    
+    */    
 }
