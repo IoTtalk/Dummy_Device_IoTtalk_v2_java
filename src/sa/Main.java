@@ -1,4 +1,6 @@
-package iottalk;
+package sa;
+
+import iottalk.DAI;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -39,7 +41,7 @@ public class Main{
         //Set signal handler to catch Ctrl+C
         Signal.handle(new Signal("INT"), new SignalHandler() {
             public void handle(Signal sig) {
-                System.out.println("Interrupt");
+                //System.out.println("Interrupt");
                 dai.terminate();
             }
         });
