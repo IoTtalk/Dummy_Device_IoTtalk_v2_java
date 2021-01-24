@@ -13,6 +13,7 @@
 2. Compile by : `./compile.sh`
 3. Run by : `./run.sh` or `java -cp "bin:libs/*" sa.Main`
 * If you want to update `iottalk.jar`, run `./update_iottalk_jar.sh`.
+* If you want to write your own DAI, chick [here (iottalk-java)](https://github.com/IoTtalk/iottalk-java) for more information.
 
 ## SA 說明
 ### 變數說明
