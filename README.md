@@ -62,14 +62,14 @@ public DeviceFeature Dummy_Sensor = new DeviceFeature("Dummy_Sensor", "idf"){
 };
 ```
 
-* Push Interval 設定，DAI會依據`public double push_interval`, `public Map<String, String> interval`中的值，決定push資料的週期。
-    * push data週期 = `push_interval x interval中對應值 (second)`
-    * `public double push_interval` : Unit is `second`.
-    * `public Map<String, String> interval`格式，對應值單位為`秒`，**注意 : 後方秒數為String格式** : 
+* Push Interval 設定，DAI會依據`public double push_interval`, `public Map<String, Double> interval`中的值，決定push資料的週期。
+    * 每個 IDF push data週期 = 如果 `interval` 中存在對應值，就使用該數值；若不存在就使用 `push_interval` 的數值。
+    * `public double push_interval` : 單位為`秒`。
+    * `public Map<String, Double> interval`格式，對應值單位為`秒` : 
 ```java=
-public Map<String, String> interval = new HashMap<String, String>() {{
-    put("<IDF1 name>", "<second>");
-    put("<IDF2 name>", "<second>");
+public Map<String, Double> interval = new HashMap<String, Double>() {{
+    put("<IDF1 name>", new Double(<second>));
+    put("<IDF2 name>", new Double(<second>));
     ...
 }};
 ```
