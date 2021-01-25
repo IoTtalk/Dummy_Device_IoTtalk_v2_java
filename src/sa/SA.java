@@ -77,26 +77,30 @@ public class SA{
     */
     public double push_interval = 1;
     
-    public Map<String, String> interval = new HashMap<String, String>() {{
-        put("Dummy_Sensor", "1");  //assign feature interval
+    public Map<String, Double> interval = new HashMap<String, Double>() {{
+        put("Dummy_Sensor", new Double(2.0));  //assign feature interval
     }};
     
     /*
     [OPTIONAL] Set your own callback function if needed
     */
     /*
+    //invoke after DAN finish register
     public void on_register(){
         System.out.println("register successfully");
     }
     
+    //invoke after DAN finish deregister
     public void on_deregister(){
         System.out.println("deregister successfully");
     }
     
+    //invoke after DAN finish connect to server
     public void on_connect(){
         System.out.println("connect successfully");
     }
     
+    //invoke after DAN finish disconnect to server, but NOT INCLUDED unexpected disconnection
     public void on_disconnect(){
         System.out.println("disconnect successfully");
     }
