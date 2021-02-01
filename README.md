@@ -138,3 +138,6 @@ public void on_disconnect(){
     System.out.println("disconnect successfully");
 }
 ```
+
+## 架構圖
+![](https://i.imgur.com/3xVnEsH.png)
