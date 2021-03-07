@@ -1,18 +1,21 @@
 # Dummy Device for IoTtalk v2 (Java)
 
-## Dependent libraries
-已經有放在`libs`裡面了，可以不用另外下載
-* [org.json](https://mvnrepository.com/artifact/org.json/json)
-    * [Download jar](https://repo1.maven.org/maven2/org/json/json/20201115/json-20201115.jar)
-* [org.eclipse.paho.client.mqttv3](https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.5)
-    * [Download jar](https://repo.eclipse.org/content/repositories/paho-releases/org/eclipse/paho/org.eclipse.paho.client.mqttv3/1.2.5/org.eclipse.paho.client.mqttv3-1.2.5.jar)
+## 需要的函式庫
+已經有放在`libs`裡面了，不用另外下載
+### iottalk.jar
+* [原始碼連結](https://github.com/IoTtalk/iottalk-java)
+* 需要更新最新版的iottalk.jar : `./update_iottalk_jar.sh`
+
+### 其他的Maven函式庫
+* [org.json](https://mvnrepository.com/artifact/org.json/json) : 版本需求 >= 20131018
+* [org.eclipse.paho.client.mqttv3](https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.5) : 版本需求 == 1.2.5
 
 ## 如何使用
 1. 在 `src/sa/SA.java`裡面修改設定
-    * 如果只是想跑`Dummy Device`，可以設定，`src/sa/SA.java`中的`api_url`即可。
+    * 如果只是想跑`Dummy Device`，可以設定 `src/sa/SA.java`中的`api_url`即可。
     * 如果要修改其他設定，請看 [詳細說明](#SA-說明)
 2. 編譯 : `./compile.sh`
-3. 執行 : `./run.sh` 或 `java -cp "bin:libs/*" sa.Main`
+3. 執行 : `./run.sh`
 * 若想要更新 `iottalk.jar`, 可執行 `./update_iottalk_jar.sh`.
 * 如果想要撰寫自己的DAI, 可以看 [這裡 (iottalk-java)](https://github.com/IoTtalk/iottalk-java) 有詳細說明。
 
@@ -74,7 +77,7 @@ public Map<String, Double> interval = new HashMap<String, Double>() {{
 }};
 ```
 Example : 
-此範例中，`Dummy_Sensor` push data週期為`2 x 0.3 = 0.6`秒
+此範例中，`Dummy_Sensor` push data週期為`0.6`秒
 ```java=
 public double push_interval = 2;
 
@@ -138,6 +141,3 @@ public void on_disconnect(){
     System.out.println("disconnect successfully");
 }
 ```
-
-## 架構圖
-![](https://i.imgur.com/3xVnEsH.png)
