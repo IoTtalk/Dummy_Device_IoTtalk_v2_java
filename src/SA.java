@@ -1,5 +1,3 @@
-package sa;
-
 import iottalk.DeviceFeature;
 
 import java.lang.Math;
@@ -46,7 +44,7 @@ public class SA{
     //Set IDFs in this format
     public DeviceFeature Dummy_Sensor = new DeviceFeature("Dummy_Sensor", "idf"){
         @Override
-        public JSONArray publishData() throws JSONException{
+        public JSONArray getPushData() throws JSONException{
             int max = 100;
             int min = 1;
             int randomNum = min + (int)(Math.random() * ((max-min) + 1));
@@ -59,7 +57,7 @@ public class SA{
     //Set ODFs in this format
     public DeviceFeature Dummy_Control = new DeviceFeature("Dummy_Control", "odf"){
         @Override
-        public void onData(MqttMessage message, String df_name, String df_type){
+        public void pullDataCB(MqttMessage message, String df_name, String df_type){
             System.out.println(df_name);
             try{
                 JSONArray so = new JSONArray(new String(message.getPayload(), "UTF-8"));
