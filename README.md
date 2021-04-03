@@ -4,7 +4,7 @@
 已經有放在 `libs` 裡面了，不用另外下載
 ### iottalk.jar
 * [原始碼連結](https://github.com/IoTtalk/iottalk-java)
-* 需要更新最新版的iottalk.jar : `./update_iottalk_jar.sh`
+* 更新最新版的 iottalk.jar : `make update_iottalk.jar`
 
 ### 其他的Maven函式庫
 * [org.json](https://mvnrepository.com/artifact/org.json/json) : 版本需求 >= 20131018
@@ -16,6 +16,7 @@
     * 如果要修改其他設定，請看 [詳細說明](#SA-說明)
 2. 編譯 : `make compile`
 3. 執行 : `make run`
+* 若想要執行的 SA 檔案名稱並非 `SA.java`，可以使用 `make SA=<SA class file path>`， ex : `make SA=bin/Event.class`。
 * 若想要更新 `iottalk.jar` , 可執行 `make update_iottalk.jar`。
 * 如果想要撰寫自己的 DAI ，可以看 [這裡 (iottalk-java)](https://github.com/IoTtalk/iottalk-java) 有詳細說明。
 
@@ -34,7 +35,7 @@ IDF
 ---
 
 ```java=
-public DeviceFeature <IDF name> = new DeviceFeature("<IDF name>", "idf"){
+public DeviceFeature <IDF object name> = new DeviceFeature("<IDF name>", "idf"){
     @Override
     public JSONArray getPushData() throws JSONException{
         //Create push data...
@@ -49,6 +50,7 @@ public DeviceFeature <IDF name> = new DeviceFeature("<IDF name>", "idf"){
 };
 ```
 * **`<IDF name>`必需和iottalk上的名稱相同。**
+* **`<IDF object name>` 建議與 `<IDF name>` 相同，若 `<IDF name>` 中含有 `+`, `-` 等符號，可以將其改成 ` _ ` 。
 * IDF 需要 override `public JSONArray getPushData()` 這個 function，DAI 會依照 push interval 的設定，定期像 server push 資料。
 * Example
 ```java=
@@ -90,7 +92,7 @@ ODF
 ---
 
 ```java=
-public DeviceFeature <ODF name> = new DeviceFeature("<ODF name>", "odf"){
+public DeviceFeature <ODF object name> = new DeviceFeature("<ODF name>", "odf"){
     @Override
         public void pulDataCB(MqttMessage message, String df_name, String df_type){
             //Callback function body...
@@ -98,6 +100,7 @@ public DeviceFeature <ODF name> = new DeviceFeature("<ODF name>", "odf"){
 };
 ```
 * **`<ODF name>`必需和iottalk上的名稱相同。**
+* **`<ODF object name>` 建議與 `<ODF name>` 相同，若 `<ODF name>` 中含有 `+`, `-` 等符號，可以將其改成 ` _ ` 。
 * ODF 需要 override `public void pulDataCB(MqttMessage message, String df_name, String df_type)` 這個 function，當 ODF 值有更新時，此 function 會被呼叫，且可以在 `message` 中得到更新值。
 * Example
 ```java=
