@@ -5,7 +5,10 @@ BIN_DIR = bin
 SRC_DIR = src
 LIB_DIR = libs
 
-SRCS = $(wildcard $(SRC_DIR)/SA.java)
+SA = $(BIN_DIR)/SA.class
+
+SRCS = $(wildcard $(SRC_DIR)/*.java)
+CLASSES = $(SRCS:$(SRC_DIR)/%.java=$(BIN_DIR)/%.class)
 CPFLAG = -cp "libs/*"
 DFLAG = -d $(BIN_DIR)
 
@@ -19,27 +22,27 @@ IOTTALK_JAR_NAME = $(LIB_DIR)/iottalk.jar
 
 JAR_FILES = $(JSON_JAR_NAME) $(PAHO_JAR_NAME) $(IOTTALK_JAR_NAME)
 
-all:
+run:
 	make check_jar
 	$(JAVA) $(CPFLAG) iottalk.DAI $(SA)
 
-update_jar: $(JAR_FILES)
-	echo 2
+update_jar: $(JAR_FILES) update_iottalk.jar
+	wget $(PAHO_JAR_URL) -P $(LIB_DIR);
+	wget $(JSON_JAR_URL) -P $(LIB_DIR);
 
-compile: $(BIN_DIR)/SA.class
+compile: $(CLASSES)
 
-run: $(BIN_DIR)/SA.class
-	make check_jar
-	$(JAVA) $(CPFLAG) iottalk.DAI $(BIN_DIR)/SA.class
-
-$(BIN_DIR)/SA.class: $(BIN_DIR) $(SRCS)
+$(CLASSES): $(BIN_DIR) $(SRCS)
 	make check_jar
 	$(JC) $(CPFLAG) $(DFLAG) $(SRCS)
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-check_jar: $(JSON_JAR_NAME) $(PAHO_JAR_NAME) $(IOTTALK_JAR_NAME)
+$(LIB_DIR):
+	mkdir -p $(LIB_DIR)
+
+check_jar: $(LIB_DIR) $(JSON_JAR_NAME) $(PAHO_JAR_NAME) $(IOTTALK_JAR_NAME)
 
 $(JSON_JAR_NAME):
 	@if [ ! -f $(JSON_JAR_NAME) ]; then \
