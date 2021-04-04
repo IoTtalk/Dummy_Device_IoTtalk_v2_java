@@ -15,10 +15,11 @@
     * 如果只是想跑 `Dummy Device`，可以設定 `src/SA.java` 中的 `api_url` 即可。
     * 如果要修改其他設定，請看 [詳細說明](#SA-說明)
 2. 編譯 : `make compile`
-3. 執行 : `make run`
-* 若想要執行的 SA 檔案名稱並非 `SA.java`，可以使用 `make SA=<SA class file path>`， ex : `make SA=bin/Event.class`。
+3. 執行 : `make run` ( 用此方法會自動以 bin/SA.class 為SA的目標 )
+* 若想要執行的 SA 檔案名稱並非 `SA.java`，可以使用 `make run SA=<SA class file path>`， ex : `make SA=bin/EventDriven.class`。
 * 若想要更新 `iottalk.jar` , 可執行 `make update_iottalk.jar`。
-* 如果想要撰寫自己的 DAI ，可以看 [這裡 (iottalk-java)](https://github.com/IoTtalk/iottalk-java) 有詳細說明。
+* 如果需要在 DAI 後另外執行自定義的 Thread，可以參考 [這裡](#EventDriven介紹)
+* 如果想要撰寫自己的 DAI ，可以看 [這裡](https://github.com/IoTtalk/iottalk-java) 有詳細說明。
 
 ## SA 說明
 ### 變數說明
@@ -143,4 +144,70 @@ public void on_connect(){
 public void on_disconnect(){
     System.out.println("disconnect successfully");
 }
+```
+
+## EventDriven 介紹
+* 如果需要在 DAI 後另外執行自定義的 Thread，可以參考以下說明。
+* 範例檔參考 `src/EventDriven.java`。
+### Thread 物件建立
+可以自行在 SA 中宣告，或是參考以下範例格式
+```java
+public class FuncThread extends Thread{
+     public DAN dan;
+     public DAI dai;
+
+     public void push(String idfName, JSONArray data) throws Exception{
+         try{
+             dan.push(idfName, data);
+         } catch (Exception e){
+             throw e;
+         }
+     }
+ }
+ public FuncThread funcThread1 = new FuncThread(){
+     @Override
+     public void run(){
+         try{
+             while (true){
+                  // Your instructions ...
+                 java.util.concurrent.TimeUnit.MILLISECONDS.sleep(500);
+             }
+         } catch(Error e){
+             e.printStackTrace();
+         } catch(Exception e){
+             e.printStackTrace();
+         }    
+     }
+ };
+```
+
+### Thread 的啟動與終止
+啟動與終止需寫在 [Callback function](#Callback-function) 中。
+
+#### 紀錄 DAN
+由於在執行的過程，你可能會需要呼叫 DAN 的一些功能，像是 `push`，請在 `on_register` 完成
+注意 ! 需將 `public void on_register()` 修改為 `public void on_register(DAN dan)`
+```java
+public void on_register(DAN dan){
+     funcThread1.dan = dan;
+     System.out.println("register successfully");
+ }
+```
+
+#### 啟動
+可以在 `on_register` 或是 `on_connect` 中宣告
+```java
+public void on_connect(){
+     funcThread1.start();
+     System.out.println("connect successfully");
+ }
+```
+
+#### 終止
+請在`on_disconnect` 中終止所有的 thread 。別寫在 `on_deregister` 中，因為 `on_deregister` 不一定會被觸發。
+```java
+public void on_disconnect(){
+     funcThread1.interrupt();
+     System.out.println("disconnect successfully");
+ }
 ```
