@@ -94,7 +94,6 @@ public class EventDriven{
     */
     public class FuncThread extends Thread{
         public DAN dan;
-        public DAI dai;
         
         public void push(String idfName, JSONArray data) throws Exception{
             try{
@@ -132,9 +131,8 @@ public class EventDriven{
     */
     
     //invoke after DAN finish register
-    public void on_register(DAN dan, DAI dai){
+    public void on_register(DAN dan){
         funcThread1.dan = dan;
-        funcThread1.dai = dai;
         System.out.println("register successfully");
     }
     
