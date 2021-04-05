@@ -1,14 +1,14 @@
 # Dummy Device for IoTtalk v2 (Java)
 
 ## 需要的函式庫
-已經有放在 `libs` 裡面了，不用另外下載
+使用指令 `make check_jar` 會自動下載所需 jar 的預設版本。
 ### iottalk.jar
 * [原始碼連結](https://github.com/IoTtalk/iottalk-java)
-* 更新最新版的 iottalk.jar : `make update_iottalk.jar`
+* 更新最新版的 iottalk.jar : `make update_iottalk_jar`
 
 ### 其他的Maven函式庫
 * [org.json](https://mvnrepository.com/artifact/org.json/json) : 版本需求 >= 20131018
-* [org.eclipse.paho.client.mqttv3](https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.5) : 版本需求 == 1.2.5
+* [org.eclipse.paho.client.mqttv3](https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.5) : 版本需求 >= 1.2.5
 
 ## 如何使用
 1. 在 `src/SA.java` 裡面修改設定
@@ -16,8 +16,8 @@
     * 如果要修改其他設定，請看 [詳細說明](#SA-說明)
 2. 編譯 : `make compile`
 3. 執行 : `make run` ( 用此方法會自動以 bin/SA.class 為SA的目標 )
-* 若想要執行的 SA 檔案名稱並非 `SA.java`，可以使用 `make run SA=<SA class file path>`， ex : `make SA=bin/EventDriven.class`。
-* 若想要更新 `iottalk.jar` , 可執行 `make update_iottalk.jar`。
+   * 若想要執行的 SA 檔案名稱並非 `SA.java`，可以使用 `make run SA=<SA class file path>`， ex : `make run SA=bin/EventDriven.class`。
+* 若想要更新所有的 jar 檔，可執行 `make update_iottalk_jar`。
 * 如果需要在 DAI 後另外執行自定義的 Thread，可以參考 [這裡](#EventDriven介紹)
 * 如果想要撰寫自己的 DAI ，可以看 [這裡](https://github.com/IoTtalk/iottalk-java) 有詳細說明。
 
@@ -154,7 +154,6 @@ public void on_disconnect(){
 ```java
 public class FuncThread extends Thread{
      public DAN dan;
-     public DAI dai;
 
      public void push(String idfName, JSONArray data) throws Exception{
          try{
