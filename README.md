@@ -152,34 +152,35 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
 * 執行 : `make run SA=bin/EventDriven.class`
 #### Thread 物件建立
 可以自行在 SA 中宣告，或是參考以下範例格式
-   ```java
-   public class FuncThread extends Thread{
-      public DAN dan;
+    ```java
+    public class FuncThread extends Thread{
+        public DAN dan;
 
-      public void push(String idfName, JSONArray data) throws Exception{
-           try{
-                dan.push(idfName, data);
-           } catch (Exception e){
-                throw e;
-           }
-       }
-   }
-   public FuncThread funcThread1 = new FuncThread(){
-       @Override
-       public void run(){
-            try{
-                 while (true){
-                      // Your instructions ...
-                      java.util.concurrent.TimeUnit.MILLISECONDS.sleep(500);
-                 }
-            } catch(Error e){
-                 e.printStackTrace();
-            } catch(Exception e){
-                 e.printStackTrace();
-            }    
-       }
-   };
-   ```
+        public void push(String idfName, JSONArray data) throws Exception{
+              try{
+                    dan.push(idfName, data);
+              } catch (Exception e){
+                    throw e;
+              }
+         }
+    }
+    
+    public FuncThread funcThread1 = new FuncThread(){
+        @Override
+        public void run(){
+             try{
+                  while (true){
+                       // Your instructions ...
+                       java.util.concurrent.TimeUnit.MILLISECONDS.sleep(500);
+                  }
+             } catch(Error e){
+                  e.printStackTrace();
+             } catch(Exception e){
+                  e.printStackTrace();
+             }    
+        }
+    };
+    ```
 
 **注意 : thread 若使用 while 迴圈，務必加上 `sleep`** ，否則會無法被 `interrupt` 中止。
 
