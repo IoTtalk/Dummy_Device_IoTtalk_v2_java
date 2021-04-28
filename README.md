@@ -4,7 +4,7 @@
 * git
 * make
 * [OpenJDK](https://openjdk.java.net/install/) : JDK 版本需求 >= 8
-* 需要的 jar 函式庫 <br> **使用指令 `make check_jar` 會自動下載所需 jar 的預設版本。**
+* 需要的 jar 函式庫 <br> **使用指令 `make check_jar` 會自動下載所需 jar 的預設版本至 `./lib` 資料夾。**
    * [iottalk](https://github.com/IoTtalk/iottalk-java)
    * [org.json](https://mvnrepository.com/artifact/org.json/json) : 版本需求 >= 20131018 , 預設版本 : 20210307
    * [org.eclipse.paho.client.mqttv3](https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.5) : 版本需求 >= 1.2.5 , 預設版本 : 1.2.5
@@ -26,12 +26,12 @@
 
 ### SA 說明
 #### 基本變數說明
-* `public String api_url` : csm的url。 範例 : `"http://localhost:9992/csm"`
-* `public String device_model` : Device Model名稱。 範例 : `"Dummy Device"`
+* `public String api_url` : IoTtalk csm 的 url。 範例 : `"http://localhost:9992/csm"`
+* `public String device_model` : Device Model 名稱。 範例 : `"Dummy Device"`
 * `public String device_name` : Device 的名稱，就是顯示在 iottalk GUI 上的名稱。 範例 : `"Dummy_test"`
 * `public String username` (OPTIONAL) : 設為某 user private 使用。
 * `public String device_addr` (OPTIONAL) : 設定自訂的 UUID，需為 Hex String。 範例 : `"aaaaa1234567890abcdef"`。
-* `public boolean persistent_binding` (OPTIONAL) : 若為 `true`，DAN 將不會在 disconnect 後註銷該 Device，在 project 中的 binding 會被保留，下次此 Device 重連時，會自動 bind 上。**注意 : 設為 `true` 時，必需設定 `device_addr` 值!**
+* `public boolean persistent_binding` (OPTIONAL) : 若為 `true`，DAN 將不會在 disconnect 後註銷該 Device，在 project 中的 binding 會被保留，下次此 Device 重連時，會自動 bind 上。**注意 : 設為 `true` 時，必需設定 `device_addr` 值並且保持固定不可修改!**
 
 #### Device Feature設定
 IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
@@ -50,7 +50,7 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
   ```
 * **`<IDF name>`必需和iottalk上的名稱相同。**
 * **`<IDF object name>` 建議與 `<IDF name>` 相同**，若 `<IDF name>` 中含有 `+`, `-` 等符號，可以將其改成 ` _ ` 。
-* IDF 需要 override `public JSONArray getPushData()` 這個 function，DAI 會依照 push interval 的設定，定期像 server push 資料。
+* IDF 需要 override `public JSONArray getPushData()` 這個 function，DAI 會依照 push interval 的設定，定期向 server push 資料。
 * Push Interval : DAI push 資料的週期。 <br> DAI 會依據 `public double push_interval`, `public Map<String, Double> interval` 中的值，來決定該 IDF push 資料的週期。
    * `public double push_interval` : 為預設值，單位為 `秒`，若沒有特別設定，則使用此數值做為 push interval。
    * `public Map<String, Double> interval` : 個別 IDF push interval 的值，單位為 `秒`
@@ -94,19 +94,19 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
   ```java
   public DeviceFeature <ODF object name> = new DeviceFeature("<ODF name>", "odf"){
       @Override
-          public void pulDataCB(MqttMessage message, String df_name, String df_type){
+          public void pullDataCB(MqttMessage message, String df_name, String df_type){
               //Callback function body...
           }
   };
   ```
-* **`<ODF name>`必需和iottalk上的名稱相同。**
+* **`<ODF name>` 必需和 iottalk 上的名稱相同。**
 * **`<ODF object name>` 建議與 `<ODF name>` 相同**，若 `<ODF name>` 中含有 `+`, `-` 等符號，可以將其改成 ` _ ` 。
-* ODF 需要 override `public void pulDataCB(MqttMessage message, String df_name, String df_type)` 這個 function，當 ODF 值有更新時，此 function 會被呼叫，且可以在 `message` 中得到更新值。
+* ODF 需要 override `public void pullDataCB(MqttMessage message, String df_name, String df_type)` 這個 function，當 ODF 值有更新時，此 function 會被呼叫，且可以在 `message` 中得到更新值。
 * 範例
   ```java
   public DeviceFeature Dummy_Control = new DeviceFeature("Dummy_Control", "odf"){
       @Override
-      public void pulDataCB(MqttMessage message, String df_name, String df_type){
+      public void pullDataCB(MqttMessage message, String df_name, String df_type){
           System.out.println(df_name);
           try{
               JSONArray so = new JSONArray(new String(message.getPayload(), "UTF-8"));
@@ -120,11 +120,11 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
   ```
 
 #### Callback functions
-* 以下4個callback會在對應的時機被DAN呼叫，若有需求，可自行宣告。
-  * `public void on_register()` : 在 `DAN` 註冊 Device 完成後會執行。
-  * `public void on_deregister()` : 在 `DAN` 註銷 Device 完成後會執行。
-  * `public void on_connect()` : 在 `DAN` 與 server 建立連線後會執行。
-  * `public void on_disconnect()` : 在 `DAN` 與 server 正常終止連線後會執行(意外終止則不會)。
+* 以下 4 個 callback 會在對應的時機被程式自動呼叫，若有需求，可自行宣告。
+  * `public void on_register()` : 在 Device 註冊 Device 完成後會執行。
+  * `public void on_deregister()` : 在 Device 註銷 Device 完成後會執行。
+  * `public void on_connect()` : 在 Device 與 server 建立連線後會執行。
+  * `public void on_disconnect()` : 在 Device 與 server 正常終止連線後會執行(意外終止則不會)。
 
 * 範例
   ```java
@@ -146,7 +146,7 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
   ```
 
 ### EventDriven 介紹
-* 如果需要在 DAI 後另外執行自定義的 Thread，可以參考以下說明。
+* 如果需要在 Device 自動執行後另外執行自定義的 Thread，可以參考以下說明。
 * 參考範例檔 : `src/EventDriven.java`
 * 編譯 : `make compile`
 * 執行 : `make run SA=bin/EventDriven.class`
@@ -184,13 +184,13 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
 
 **注意 : thread 若使用 while 迴圈，務必加上 `sleep`** ，否則會無法被 `interrupt` 中止。
 
-#### Thread 的啟動與終止
-1. 紀錄 DAN
+#### 啟動與終止自定義的 Thread
+1. 取得 DAN 物件 (非必要)
 2. 啟動 thread
 3. 中止 thread
 需寫在正確的 [Callback function](#Callback-function) 中，已確定程式行為正確。
 
-**紀錄 DAN**
+**取得 DAN 物件 (非必要)**
 
 * 在執行的過程，你可能會需要呼叫 DAN 的一些功能，像是 `push`。
 * 需在 `on_register()` 中紀錄 DAN 物件。為了取得註冊後的 dan 物件，請將 `public void on_register()` 修改為 `public void on_register(DAN dan)`
