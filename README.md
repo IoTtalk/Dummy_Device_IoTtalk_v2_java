@@ -51,9 +51,13 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
 * **`<IDF name>`必需和iottalk上的名稱相同。**
 * **`<IDF object name>` 建議與 `<IDF name>` 相同**，若 `<IDF name>` 中含有 `+`, `-` 等符號，可以將其改成 ` _ ` 。
 * IDF 需要 override `public JSONArray getPushData()` 這個 function，DAI 會依照 push interval 的設定，定期向 server push 資料。
-* Push Interval : DAI push 資料的週期。 <br> DAI 會依據 `public double push_interval`, `public Map<String, Double> interval` 中的值，來決定該 IDF push 資料的週期。
-   * `public double push_interval` : 為預設值，單位為 `秒`，若沒有特別設定，則使用此數值做為 push interval。
-   * `public Map<String, Double> interval` : 個別 IDF push interval 的值，單位為 `秒`
+* Push Interval : DAI push 資料的週期。
+  * DAI 會依以下順序來決定 push 資料的週期
+    1. `public Map<String, Double> interval` 中對應的值。
+    2. `public double push_interval` 的值。
+  * `public Map<String, Double> interval` : 單位為 `秒`，此變數以鍵值對記錄個別 IDF push interval 的值。
+  * `public double push_interval` : 單位為 `秒`，此變數為 push interval 的 global 預設值。
+   
   ```java
   public double push_interval = <global push interval value>;
   public Map<String, Double> interval = new HashMap<String, Double>() {{
@@ -62,7 +66,7 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
       ...
   }};
   ```
-* 總的來說 <br> `每個 IDF push data 週期 = 如果 ( *interval* 中存在對應值 ) ? 就使用該數值 : 若不存在則使用 *push_interval* 的數值。`
+  
 * 範例 <br>
 此範例中，`Dummy_Sensor` 回傳 1 ~ 100 的整數亂數， push data 的週期為 0.3 秒
   ```java
@@ -192,7 +196,7 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
 
 **取得 DAN 物件 (非必要)**
 
-* 在執行的過程，你可能會需要呼叫 DAN 的一些功能，像是 `push`。
+* 在執行的過程，你可能會需要呼叫 DAN 的一些功能，像是 `push` 來自行發送資料。
 * 需在 `on_register()` 中紀錄 DAN 物件。為了取得註冊後的 dan 物件，請將 `public void on_register()` 修改為 `public void on_register(DAN dan)`
 * 範例
   ```java
