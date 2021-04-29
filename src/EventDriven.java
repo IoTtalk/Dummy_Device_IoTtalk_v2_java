@@ -1,8 +1,9 @@
-package sa;
-
 import iottalk.DeviceFeature;
+import iottalk.DAN;
+import iottalk.DAI;
 
 import java.lang.Math;
+import java.lang.Thread;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -15,7 +16,10 @@ import org.json.JSONException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-public class SA{
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class EventDriven{
     // The registeration api url, you can use IP or Domain.
     public String api_url = "http://localhost:9992/csm";
     
@@ -46,7 +50,7 @@ public class SA{
     //Set IDFs in this format
     public DeviceFeature Dummy_Sensor = new DeviceFeature("Dummy_Sensor", "idf"){
         @Override
-        public JSONArray publishData() throws JSONException{
+        public JSONArray getPushData() throws JSONException{
             int max = 100;
             int min = 1;
             int randomNum = min + (int)(Math.random() * ((max-min) + 1));
@@ -59,7 +63,7 @@ public class SA{
     //Set ODFs in this format
     public DeviceFeature Dummy_Control = new DeviceFeature("Dummy_Control", "odf"){
         @Override
-        public void onData(MqttMessage message, String df_name, String df_type){
+        public void pullDataCB(MqttMessage message, String df_name, String df_type){
             System.out.println(df_name);
             try{
                 JSONArray so = new JSONArray(new String(message.getPayload(), "UTF-8"));
@@ -82,11 +86,53 @@ public class SA{
     }};
     
     /*
+    Set your own FuncThread
+    Remember to set 
+        dan/dai object     in callback function on_register
+        thread.start()     in callback function on_connect or on_register
+        thread interrput() in callback function on_disconnect
+    */
+    public class FuncThread extends Thread{
+        public DAN dan;
+        
+        public void push(String idfName, JSONArray data) throws Exception{
+            try{
+                dan.push(idfName, data);
+            } catch (Exception e){
+                throw e;
+            }
+        }
+    }
+    
+    public FuncThread funcThread1 = new FuncThread(){
+        @Override
+        public void run(){
+            try{
+                while (true){
+                    int max = 1;
+                    int min = -100;
+                    int randomNum = min + (int)(Math.random() * ((max-min) + 1));
+                    int [] pushData = {randomNum};
+                    JSONArray r = new JSONArray(pushData);
+                    push("Dummy_Sensor", r);
+                    System.out.println("User define's FuncThread");
+                    java.util.concurrent.TimeUnit.MILLISECONDS.sleep(500);
+                }
+            } catch(Error e){
+                e.printStackTrace();
+            } catch(Exception e){
+                e.printStackTrace();
+            }    
+        }
+    };
+    
+    /*
     [OPTIONAL] Set your own callback function if needed
     */
-    /*
+    
     //invoke after DAN finish register
-    public void on_register(){
+    public void on_register(DAN dan){
+        funcThread1.dan = dan;
         System.out.println("register successfully");
     }
     
@@ -97,12 +143,14 @@ public class SA{
     
     //invoke after DAN finish connect to server
     public void on_connect(){
+        funcThread1.start();
         System.out.println("connect successfully");
     }
     
     //invoke after DAN finish disconnect to server, but NOT INCLUDED unexpected disconnection
     public void on_disconnect(){
+        funcThread1.interrupt();
         System.out.println("disconnect successfully");
     }
-    */    
+    
 }
