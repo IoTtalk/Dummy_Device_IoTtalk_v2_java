@@ -98,19 +98,19 @@ IDF 與 ODF 設定需要用 `DeviceFeature` 這個 class 定義
   ```java
   public DeviceFeature <ODF object name> = new DeviceFeature("<ODF name>", "odf"){
       @Override
-          public void pullDataCB(MqttMessage message, String df_name, String df_type){
+          public void pullDataCB(MqttMessage message, String df_name){
               //Callback function body...
           }
   };
   ```
 * **`<ODF name>` 必需和 iottalk 上的名稱相同。**
 * **`<ODF object name>` 建議與 `<ODF name>` 相同**，若 `<ODF name>` 中含有 `+`, `-` 等符號，可以將其改成 ` _ ` 。
-* ODF 需要 override `public void pullDataCB(MqttMessage message, String df_name, String df_type)` 這個 function，當 ODF 值有更新時，此 function 會被呼叫，且可以在 `message` 中得到更新值。
+* ODF 需要 override `public void pullDataCB(MqttMessage message, String df_name)` 這個 function，當 ODF 值有更新時，此 function 會被呼叫，且可以在 `message` 中得到更新值。
 * 範例
   ```java
   public DeviceFeature Dummy_Control = new DeviceFeature("Dummy_Control", "odf"){
       @Override
-      public void pullDataCB(MqttMessage message, String df_name, String df_type){
+      public void pullDataCB(MqttMessage message, String df_name){
           System.out.println(df_name);
           try{
               JSONArray so = new JSONArray(new String(message.getPayload(), "UTF-8"));

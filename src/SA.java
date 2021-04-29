@@ -57,7 +57,7 @@ public class SA{
     //Set ODFs in this format
     public DeviceFeature Dummy_Control = new DeviceFeature("Dummy_Control", "odf"){
         @Override
-        public void pullDataCB(MqttMessage message, String df_name, String df_type){
+        public void pullDataCB(MqttMessage message, String df_name){
             System.out.println(df_name);
             try{
                 JSONArray so = new JSONArray(new String(message.getPayload(), "UTF-8"));
